@@ -2,9 +2,12 @@ from fastapi import Depends, FastAPI
 from sqlalchemy import text 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.router import router as auth_router
 from app.db.database import get_session
 
 app = FastAPI()
+
+app.include_router(auth_router)
 
 @app.get("/")
 async def root():
