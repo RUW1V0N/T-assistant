@@ -1,15 +1,21 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from sqlalchemy import text 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.database import get_session
 
 app = FastAPI()
 
 @app.get("/")
-def root():
-    return {
-        "message": "Training Assystant API"
-    }
+async def root():
+    return {"message": "Training Assistant API"}
 
-@app.get("/health")
-def health():
+
+@app.get("/health/db")
+async def database_health(session: AsyncSession = Depends(get_session)):
+    result = await session.execute(text("SELECT 1"))
+
     return {
-        "status": "OK"
+        "database": "ok",
+        "result": result.scalar(),
     }
