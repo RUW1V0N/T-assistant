@@ -6,6 +6,5 @@ class UserRegister(BaseModel):
     password: str 
 
 class UserLogin(BaseModel):
-    username: str
     email: EmailStr
     password: str
