@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.schemas.user import UserRegister, UserLogin
+from app.auth.schemas.user import UserRegister, UserLogin, UserResponse, TokenResponse
 from app.auth.security import hash_password, verify_password
 from app.auth.jwt import create_access_token
 
@@ -15,7 +15,7 @@ router = APIRouter(
     tags=["auth"],
 )
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register",response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     user_data: UserRegister,
     session: AsyncSession = Depends(get_session),
@@ -46,15 +46,15 @@ async def register(
     await session.commit()
     await session.refresh(user)
 
+    access_token = create_access_token(user.id)
+    
     return{
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "created_at": user.created_at,
+        "access_token": access_token,
+        "token_type": "bearer",
     }
 
 
-@router.post("/login")
+@router.post("/login", response_model=TokenResponse)
 async def login(
     user_data: UserLogin,
     session: AsyncSession = Depends(get_session), 
@@ -84,5 +84,5 @@ async def login(
 
     return {
         "access_token": access_token,
-        "token_type": "bearer",
+        "token_type": "bearer"
     }
