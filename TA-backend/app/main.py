@@ -3,6 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.router import router as auth_router
+from app.exercises.router import router as exercises_router
 from app.db.database import get_session
 from app.auth.dependencies import get_current_user
 from app.models.user import User
@@ -11,6 +12,7 @@ from app.auth.schemas.user import UserResponse
 app = FastAPI()
 
 app.include_router(auth_router)
+app.include_router(exercises_router)
 
 @app.get("/")
 async def root():
